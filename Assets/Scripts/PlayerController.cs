@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
 
     private float m_WallJumpMomentum;
 
+    private bool m_hasDoubleJump;
     private bool m_IsGrounded;
     private bool m_IsOnWall;
     private bool m_IsWallJumping;
@@ -62,9 +63,12 @@ public class PlayerController : MonoBehaviour
         }
 
         //Jumping
-        if (Input.GetButtonDown("Fire1") && m_IsGrounded)
+        if (Input.GetButtonDown("Fire1"))
         {
-            Jump();
+            if (m_IsGrounded || m_hasDoubleJump)
+            {
+                Jump();
+            }
         }
 
         if (Input.GetButtonDown("Fire3"))
@@ -73,6 +77,9 @@ public class PlayerController : MonoBehaviour
         }
 
         if (m_IsOnWall)
+        {
+            m_hasDoubleJump = true;
+        }
 
         //Wall sliding
         if (m_IsOnWall && m_CanMove)
@@ -89,6 +96,7 @@ public class PlayerController : MonoBehaviour
         if (m_IsGrounded)
         {
             m_IsWallJumping = false;
+            m_hasDoubleJump = true;
         }
     }
 
@@ -102,7 +110,8 @@ public class PlayerController : MonoBehaviour
         float y = Input.GetAxis("Vertical");
         Vector2 direction = new Vector2(x, y);
 
-        m_Rigidbody.AddForce(direction * m_WindPower);
+        m_Rigidbody.velocity = Vector2.zero;
+        m_Rigidbody.velocity = (direction * m_WindPower);
     }
 
     private void Move(Vector2 moveDirection)
@@ -163,7 +172,15 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        m_Rigidbody.velocity += new Vector2(0, m_JumpAmount);
+        Debug.Log("Jumping");
+        m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, m_JumpAmount);
+
+        //player is already in air when jumping
+        if (m_IsGrounded == false)
+        {
+            //use double jump
+            m_hasDoubleJump = false;
+        }
     }
 
     private void WallJump()
