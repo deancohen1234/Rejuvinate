@@ -20,9 +20,9 @@ public class FollowCamera : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
-        Vector3 lerpPos = Vector3.Lerp(m_Camera.transform.position, m_FollowTarget.position + m_CameraDistance + m_CameraOffset, Time.deltaTime * m_CamSpeed);
+        Vector3 lerpPos = Vector3.Lerp(m_Camera.transform.position, m_FollowTarget.position + m_CameraOffset, Time.deltaTime * m_CamSpeed);
         lerpPos.z = m_Camera.transform.position.z;
 
         m_Camera.transform.position = lerpPos;

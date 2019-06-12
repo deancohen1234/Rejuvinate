@@ -1240,7 +1240,7 @@ MonoBehaviour:
   m_WallLayerMask:
     serializedVersion: 2
     m_Bits: 1024
-  m_BottomColliderOffset: {x: 0, y: -0.32}
+  m_BottomColliderOffset: {x: 0, y: -0.41}
   m_RightColliderOffset: {x: 0.21, y: 0}
   m_LeftColliderOffset: {x: -0.21, y: 0}
   m_SphereRadius: 0.11
