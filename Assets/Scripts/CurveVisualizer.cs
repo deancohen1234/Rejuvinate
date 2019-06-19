@@ -39,7 +39,7 @@ public class CurveVisualizer : MonoBehaviour
 
                 for (int i = 0; i < m_Curve.GetPointArrayLength(); i++)
                 {
-                    Vector2 point = m_Curve.GetPoint(i);
+                    Vector2 point = m_Curve.GetPoint(i, transform);
 
                     cachedPoint = new Vector3(point.x, point.y, 0);
                     Gizmos.DrawSphere(cachedPoint + transform.position, 0.2f);

@@ -172,7 +172,6 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        Debug.Log("Jumping");
         m_Rigidbody.velocity = new Vector2(m_Rigidbody.velocity.x, m_JumpAmount);
 
         //player is already in air when jumping

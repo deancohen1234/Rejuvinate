@@ -8,6 +8,16 @@ public class BezierCurve
 
     private Vector2[] m_CurvePoints;
 
+    public BezierCurve()
+    {
+        //default contrustor
+    }
+
+    public BezierCurve(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
+    {
+        CreateCurve(p0, p1, p2, p3);
+    }
+
     public void CreateCurve(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
     {
         if (m_Accuracy == 0)
@@ -27,9 +37,16 @@ public class BezierCurve
         }
     }
 
-    public Vector2 GetPoint(int arrayIndex)
+    public Vector2 GetPoint(int arrayIndex, Transform transformOffset)
     {
-        return m_CurvePoints[arrayIndex];
+        Vector3 positionOffset = Vector3.zero;
+
+        if (transformOffset != null)
+        {
+            positionOffset = transformOffset.position;
+        }
+
+        return (Vector3)m_CurvePoints[arrayIndex] + positionOffset;
     }
 
     public int GetPointArrayLength()
