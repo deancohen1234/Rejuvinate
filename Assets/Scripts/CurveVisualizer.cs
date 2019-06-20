@@ -5,6 +5,7 @@ using UnityEngine;
 public class CurveVisualizer : MonoBehaviour
 {
     public Transform[] m_Points;
+    public bool m_IsEnabled;
 
     private BezierCurve m_Curve;
     private Vector3 cachedPoint; //used to save memory rather than instantiating new vector3 each frame
@@ -22,29 +23,25 @@ public class CurveVisualizer : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (m_Curve == null)
+        if (m_IsEnabled == false) { return; }
+
+        if (m_Points.Length == 4)
         {
-            m_Curve = new BezierCurve();
-        }
-        else
-        {
-            if (m_Points.Length == 4)
+            Vector2 p0 = new Vector2(m_Points[0].localPosition.x, m_Points[0].localPosition.y);
+            Vector2 p1 = new Vector2(m_Points[1].localPosition.x, m_Points[1].localPosition.y);
+            Vector2 p2 = new Vector2(m_Points[2].localPosition.x, m_Points[2].localPosition.y);
+            Vector2 p3 = new Vector2(m_Points[3].localPosition.x, m_Points[3].localPosition.y);
+
+            m_Curve = new BezierCurve(p0, p1, p2, p3);
+
+            for (int i = 0; i < m_Curve.GetPointArrayLength(); i++)
             {
-                Vector2 p0 = new Vector2(m_Points[0].localPosition.x, m_Points[0].localPosition.y);
-                Vector2 p1 = new Vector2(m_Points[1].localPosition.x, m_Points[1].localPosition.y);
-                Vector2 p2 = new Vector2(m_Points[2].localPosition.x, m_Points[2].localPosition.y);
-                Vector2 p3 = new Vector2(m_Points[3].localPosition.x, m_Points[3].localPosition.y);
+                Vector2 point = m_Curve.GetPoint(i, transform);
 
-                m_Curve.CreateCurve(p0, p1, p2, p3);
-
-                for (int i = 0; i < m_Curve.GetPointArrayLength(); i++)
-                {
-                    Vector2 point = m_Curve.GetPoint(i, transform);
-
-                    cachedPoint = new Vector3(point.x, point.y, 0);
-                    Gizmos.DrawSphere(cachedPoint + transform.position, 0.2f);
-                }
+                cachedPoint = new Vector3(point.x, point.y, 0);
+                Gizmos.DrawSphere(cachedPoint, 0.2f);
             }
         }
+        
     }
 }
