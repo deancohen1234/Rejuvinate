@@ -25,6 +25,21 @@ public class WaterVein : MonoBehaviour
     private void Start()
     {
         m_Curve = new BezierCurve(m_Points[0].localPosition, m_Points[1].localPosition, m_Points[2].localPosition, m_Points[3].localPosition);
+
+        SetupLineRenderer();
+    }
+
+    private void SetupLineRenderer()
+    {
+        LineRenderer lineRenderer = GetComponent<LineRenderer>();
+        
+        if (lineRenderer == null) { Debug.LogError("No Line Renderer attached to object!"); return; }
+
+        lineRenderer.positionCount = m_Curve.GetPointArrayLength();
+        for (int i = 0; i < lineRenderer.positionCount; i++)
+        {
+            lineRenderer.SetPosition(i, m_Curve.GetPoint(i, transform));
+        }
     }
 
     private void Update()
@@ -69,8 +84,13 @@ public class WaterVein : MonoBehaviour
         m_TransportingObject = t;
         m_IsObjectInVein = true;
 
-        Debug.Log("Enterin Vein");
+        Debug.Log("Entering Vein");
         
+    }
+
+    public BezierCurve GetCurve()
+    {
+        return m_Curve;
     }
 
     private void OnDrawGizmos()

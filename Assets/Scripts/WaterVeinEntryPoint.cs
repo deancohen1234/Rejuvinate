@@ -27,6 +27,13 @@ public class WaterVeinEntryPoint : MonoBehaviour
         if (m_EnteringObject)
         {
             m_EnteringObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
+
+            //get direction between last two points in curve to use as launch velocity
+            BezierCurve veinCurve = m_ParentVein.GetCurve();
+            Vector2 velocityDirection = veinCurve.GetPoint(veinCurve.GetPointArrayLength() - 1, null) - veinCurve.GetPoint(veinCurve.GetPointArrayLength() - 2, null);
+
+            Debug.Log(velocityDirection);
+            m_EnteringObject.GetComponent<Rigidbody2D>().velocity = velocityDirection.normalized * 20.0f;
         }
     }
 }
