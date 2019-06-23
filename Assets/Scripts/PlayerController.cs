@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
     private bool m_IsOnWall;
     private bool m_IsWallJumping;
     private bool m_CanMove = true;
+    private bool m_IsExpelled;
 
     private bool m_OnRightWall;
 
@@ -97,6 +98,7 @@ public class PlayerController : MonoBehaviour
         {
             m_IsWallJumping = false;
             m_hasDoubleJump = true;
+            m_IsExpelled = false;
         }
     }
 
@@ -117,7 +119,7 @@ public class PlayerController : MonoBehaviour
     private void Move(Vector2 moveDirection)
     {
         //caluclate player velocity after a wall jump
-        if (m_IsWallJumping)
+        if (m_IsWallJumping || m_IsExpelled)
         {
             //doesn't need to know if on right wall or left wall because momentum was multiplied by it earilier
             m_Rigidbody.velocity = Vector2.Lerp(m_Rigidbody.velocity, new Vector2(moveDirection.x * m_MoveSpeed, m_Rigidbody.velocity.y), Time.deltaTime * m_WallJumpLerpTime);
@@ -195,7 +197,7 @@ public class PlayerController : MonoBehaviour
         m_IsOnWall = false;
     }
 
-    IEnumerator DisableMovement(float time)
+    private IEnumerator DisableMovement(float time)
     {
         m_CanMove = false;
         yield return new WaitForSeconds(time);
@@ -209,6 +211,12 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireSphere((Vector2)transform.position + m_BottomColliderOffset, m_SphereRadius);
         Gizmos.DrawWireSphere((Vector2)transform.position + m_RightColliderOffset, m_SphereRadius);
         Gizmos.DrawWireSphere((Vector2)transform.position + m_LeftColliderOffset, m_SphereRadius);
+    }
+
+    //used when player is expelled from vein, functions similarly to isWallJumping
+    public void SetIsExpelled(bool b)
+    {
+        m_IsExpelled = b;
     }
 
     private void OnGUI()

@@ -13,6 +13,8 @@ public class WaterVein : MonoBehaviour
     public Transform[] m_Points;
     public float m_LerpSpeed;
 
+    public float m_ExitSpeed = 25f;
+
     private BezierCurve m_Curve;
     private Vector3 cachedPoint; //used to save memory rather than instantiating new vector3 each frame
 
@@ -62,21 +64,41 @@ public class WaterVein : MonoBehaviour
                 //object at end of vein
                 if (m_VeinLocationIndex + 1 >= m_Curve.GetPointArrayLength())
                 {
-                    m_IsObjectInVein = false;
-                    m_TransportingObject = null;
-
-                    if (m_VeinMovementCompleted != null)
-                    {
-                        m_VeinLocationIndex = 0;
-                        m_VeinMovementCompleted.Invoke();
-                    }
-
+                    ExitVein();
                     return;
                 }
             }
             
         }
     }
+
+    //called when object has reached the end of the vein and is about to be expelled
+    private void ExitVein()
+    {
+        m_VeinLocationIndex = 0;
+        m_IsObjectInVein = false;
+
+        if (m_TransportingObject != null)
+        {
+            //if object is player
+            if (m_TransportingObject.GetComponent<PlayerController>())
+            {
+                m_TransportingObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
+
+                m_TransportingObject.GetComponent<PlayerController>().SetIsExpelled(true);
+
+                //get direction between last two points in curve to use as launch velocity
+                Vector2 velocityDirection = m_Curve.GetPoint(m_Curve.GetPointArrayLength() - 1, null) - m_Curve.GetPoint(m_Curve.GetPointArrayLength() - 2, null);
+
+                Debug.Log(velocityDirection);
+                m_TransportingObject.GetComponent<Rigidbody2D>().velocity = velocityDirection.normalized * m_ExitSpeed;
+            }
+
+            m_TransportingObject = null;
+
+        }
+    }
+
     //called from other object's trigger enter
     //sends in Transform that is moved through vein
     public void EnterVein(Transform t)
