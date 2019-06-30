@@ -31,5 +31,22 @@ public class AnimationController : MonoBehaviour
         }
 
         m_Animator.SetBool("IsLeftMoving", m_IsFacingLeft);
+
+
+        //check if idling
+        if (IsAlmostEqual(horizontalInput, 0.0f, 0.01f))
+        {
+            m_Animator.SetBool("IsIdle", true);
+        }
+        else
+        {
+            m_Animator.SetBool("IsIdle", false);
+        }
+    }
+
+    private bool IsAlmostEqual(float a, float b, float threshold)
+    {
+        bool check = Mathf.Abs(a - b) <= threshold;
+        return check;
     }
 }
