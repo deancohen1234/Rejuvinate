@@ -12,6 +12,7 @@ public class FollowCamera : MonoBehaviour
     public float m_CamSpeed;
     public float m_TopBounds = 0.5f; //distance from the center view before camera will pan vertically (Potentially split this into top and bottom buffer)
     public float m_BottomBounds = 0.5f;
+    public float m_VerticalCamSpeedCap = 1.0f;
 
     private Camera m_Camera;
     private Vector3 m_CameraDistance;
@@ -32,22 +33,27 @@ public class FollowCamera : MonoBehaviour
     {
         Vector3 lerpPos = Vector3.Lerp(m_Camera.transform.position, m_FollowTarget.position + m_CameraOffset, Time.deltaTime * m_CamSpeed);
         lerpPos.z = m_Camera.transform.position.z;
-
+        
         if (!IsWithinRange(m_FollowTarget.position.y, m_Camera.transform.position.y - m_BottomBounds, m_Camera.transform.position.y + m_TopBounds))
         {
             Debug.Log("Out of Range of Bounds");
-            //lerpPos.y = Mathf.Lerp(m_Camera.transform.position.y, m_FollowTarget.position.y + m_CameraOffset.y, Time.deltaTime * m_VerticalCamSpeed);
+            Vector3 dir = m_FollowTarget.transform.position + m_CameraOffset - m_Camera.transform.position;
+            Vector3 moveVector = (dir.normalized * m_VerticalCamSpeed * Time.deltaTime) + m_Camera.transform.position;
+
+            lerpPos.y = moveVector.y;
             m_JustEnteredBounds = false;
         }
         else
         {
-            Debug.Log("Just Entered Bounds: " + m_JustEnteredBounds + "\nDist: " + (Mathf.Abs(m_FollowTarget.transform.position.y - lerpPos.y) - m_CameraOffset.y));
+            //Debug.Log("Just Entered Bounds: " + m_JustEnteredBounds + "\nDist: " + (Mathf.Abs(m_FollowTarget.transform.position.y - lerpPos.y) - m_CameraOffset.y));
             if (m_JustEnteredBounds == false)
             {
-                float desiredYPos = Mathf.Lerp(m_Camera.transform.position.y, m_FollowTarget.position.y + m_CameraOffset.y, Time.deltaTime * m_VerticalCamSpeed);
-                //lerpPos.y = desiredYPos;
+                Vector3 dir = m_FollowTarget.transform.position + m_CameraOffset - m_Camera.transform.position;
+                Vector3 moveVector = (dir.normalized * m_VerticalCamSpeed * Time.deltaTime) + m_Camera.transform.position;
 
-                if (IsAlmostEqual(m_Camera.transform.position.y, (m_FollowTarget.position.y + m_CameraOffset.y), 0.01f))
+                lerpPos.y = moveVector.y;
+
+                if (IsAlmostEqual(m_Camera.transform.position.y, (m_FollowTarget.position.y + m_CameraOffset.y), 0.1f))
                 {
                     Debug.Log("Setting Fixed");
                     m_FixedCamYPosition = m_FollowTarget.transform.position.y + m_CameraOffset.y;
@@ -61,7 +67,6 @@ public class FollowCamera : MonoBehaviour
                 lerpPos.y = m_FixedCamYPosition;
             }
         }
-
 
 
         m_Camera.transform.position = lerpPos;
