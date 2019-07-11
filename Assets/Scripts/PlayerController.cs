@@ -121,7 +121,7 @@ public class PlayerController : MonoBehaviour
         m_StoredGustDirection = direction;
     }
 
-    private bool IsStickOnOuterRim(Vector2 stickPosition)
+    public bool IsStickOnOuterRim(Vector2 stickPosition)
     {
         float rimXDist = Mathf.Abs((stickPosition.normalized * m_StickOuterRimRadius).x);
         float rimYDist = Mathf.Abs((stickPosition.normalized * m_StickOuterRimRadius).y);
