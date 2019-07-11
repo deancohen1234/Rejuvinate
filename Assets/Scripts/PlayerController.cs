@@ -20,6 +20,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("Wind Power")]
     public float m_WindPower = 10.0f;
+    public float m_MagnitudeThreshold = 10.0f;
+    [Range(0.0f, 1.0f)]
+    public float m_StickOuterRimRadius = 0.5f;
 
     [Header("Collider Properties")]
     public LayerMask m_GroundLayerMask;
@@ -42,6 +45,8 @@ public class PlayerController : MonoBehaviour
 
     private bool m_OnRightWall;
 
+    private Vector2 m_StoredGustDirection; //needed to measure delta
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,6 +63,8 @@ public class PlayerController : MonoBehaviour
         float y = Input.GetAxis("Vertical");
         Vector2 direction = new Vector2(x, y);
 
+        CheckForWindGust();
+
         if (m_CanMove)
         {
             Move(direction);
@@ -70,11 +77,6 @@ public class PlayerController : MonoBehaviour
             {
                 Jump();
             }
-        }
-
-        if (Input.GetButtonDown("Fire3"))
-        {
-            ActivateWindGust();
         }
 
         if (m_IsOnWall)
@@ -102,18 +104,49 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void ActivateWindGust()
+    private void CheckForWindGust()
     {
-        StartCoroutine(DisableMovement(0.3f));
+        float rx = Input.GetAxis("RStickHorizontal");
+        float ry = Input.GetAxis("RStickVertical");
 
-        Debug.Log("Activating Gust");
+        Vector2 direction = new Vector2(rx, ry);
 
-        float x = Input.GetAxis("Horizontal");
-        float y = Input.GetAxis("Vertical");
-        Vector2 direction = new Vector2(x, y);
+        Vector2 directionDelta = (m_StoredGustDirection * 10.0f) - (direction * 10f); //* 10 to make numbers sqr able
+
+        if (directionDelta.sqrMagnitude >= Mathf.Pow(m_MagnitudeThreshold, 2.0f) && IsStickOnOuterRim(m_StoredGustDirection))
+        {
+            ActivateWindGust(new Vector2(direction.x, -direction.y)); //world x direction and input direction are flipped thats why its negative
+        }
+
+        m_StoredGustDirection = direction;
+    }
+
+    private bool IsStickOnOuterRim(Vector2 stickPosition)
+    {
+        float rimXDist = Mathf.Abs((stickPosition.normalized * m_StickOuterRimRadius).x);
+        float rimYDist = Mathf.Abs((stickPosition.normalized * m_StickOuterRimRadius).y);
+
+        if (rimXDist < Mathf.Abs(stickPosition.x) && rimYDist < Mathf.Abs(stickPosition.y))
+        {
+            //stick is in outer radius
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
+    private void ActivateWindGust(Vector2 direction)
+    {
+        StartCoroutine(DisableMovement(1.0f));
+        StartCoroutine(LowerGravity(2f));
 
         m_Rigidbody.velocity = Vector2.zero;
-        m_Rigidbody.velocity = (direction * m_WindPower);
+        m_Rigidbody.velocity = (direction.normalized * m_WindPower);
+
+        Debug.Log("Wind Gusting");
     }
 
     private void Move(Vector2 moveDirection)
@@ -202,6 +235,13 @@ public class PlayerController : MonoBehaviour
         m_CanMove = false;
         yield return new WaitForSeconds(time);
         m_CanMove = true;
+    }
+
+    private IEnumerator LowerGravity(float time)
+    {
+        Physics2D.gravity = new Vector2(0.0f, -0.1f);
+        yield return new WaitForSeconds(time);
+        Physics2D.gravity = new Vector2(0.0f, -9.81f);
     }
 
     private void OnDrawGizmos()

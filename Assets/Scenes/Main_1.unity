@@ -297,7 +297,9 @@ MonoBehaviour:
   m_WallJumpVerticalStrength: 7
   m_WallJumpDrag: 0.95
   m_WallJumpLerpTime: 1
-  m_WindPower: 10
+  m_WindPower: 15
+  m_MagnitudeThreshold: 20
+  m_StickOuterRimRadius: 0.729
   m_GroundLayerMask:
     serializedVersion: 2
     m_Bits: 256
