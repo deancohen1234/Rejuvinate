@@ -42,10 +42,12 @@ public class PlayerController : MonoBehaviour
     private bool m_IsWallJumping;
     private bool m_CanMove = true;
     private bool m_IsExpelled;
+    private bool m_IsLeaf;
 
     private bool m_OnRightWall;
 
     private Vector2 m_StoredGustDirection; //needed to measure delta
+    private bool m_HasChargedGust = false;
 
     // Start is called before the first frame update
     void Start()
@@ -56,14 +58,30 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //floaty leaf form
+        if (Input.GetAxis("RTrigger") >= 0.8f)
+        {
+            Physics2D.gravity = new Vector2(0.0f, -0.05f);
+            m_IsLeaf = true;
+        }
+        else
+        {
+            Physics2D.gravity = new Vector2(0.0f, -9.81f);
+            m_IsLeaf = false;
+        }
+        CheckForWindGust();
+
+
+        if (m_IsLeaf) { return; }
+
         CalculateCollisions();
         CalculateFallingSpeed();
+
 
         float x = Input.GetAxis("Horizontal");
         float y = Input.GetAxis("Vertical");
         Vector2 direction = new Vector2(x, y);
 
-        CheckForWindGust();
 
         if (m_CanMove)
         {
@@ -102,23 +120,49 @@ public class PlayerController : MonoBehaviour
             m_hasDoubleJump = true;
             m_IsExpelled = false;
         }
+
+
     }
 
     private void CheckForWindGust()
     {
         float rx = Input.GetAxis("RStickHorizontal");
         float ry = Input.GetAxis("RStickVertical");
-
+        
         Vector2 direction = new Vector2(rx, ry);
+        /*
+        if (direction.sqrMagnitude <= 0.1) { return; }
 
-        Vector2 directionDelta = (m_StoredGustDirection * 10.0f) - (direction * 10f); //* 10 to make numbers sqr able
+        Vector2 directionDelta =  (direction * 10f) - (m_StoredGustDirection * 10.0f); //* 10 to make numbers sqr able
 
-        if (directionDelta.sqrMagnitude >= Mathf.Pow(m_MagnitudeThreshold, 2.0f) && IsStickOnOuterRim(m_StoredGustDirection))
+        //dot bewteen direction vector and direction to center vector
+        //1 -> 0 = pointing in direction of center
+        //0 -> -1 = pointing in opposite direction of center
+        float dot = Vector2.Dot(directionDelta.normalized, Vector2.zero - direction.normalized);
+
+        Debug.Log("Dot: " + dot);
+        //IsStickOnOuterRim(m_StoredGustDirection)
+        if (dot >= .4f && directionDelta.sqrMagnitude >= Mathf.Pow(m_MagnitudeThreshold, 2.0f))
         {
-            ActivateWindGust(new Vector2(direction.x, -direction.y)); //world x direction and input direction are flipped thats why its negative
+            ActivateWindGust(new Vector2(Vector2.zero.x - directionDelta.normalized.x, Vector2.zero.y - directionDelta.normalized.y)); //world x direction and input direction are flipped thats why its negative
         }
 
-        m_StoredGustDirection = direction;
+        m_StoredGustDirection = direction;*/
+
+        if (IsStickOnOuterRim(direction))
+        {
+            m_HasChargedGust = true;
+            m_StoredGustDirection = direction;
+        }
+        else
+        {
+            if (m_HasChargedGust)
+            {
+                //use gust
+                ActivateWindGust(new Vector2(-m_StoredGustDirection.normalized.x, m_StoredGustDirection.normalized.y));
+                m_HasChargedGust = false;
+            }
+        }
     }
 
     public bool IsStickOnOuterRim(Vector2 stickPosition)
@@ -140,13 +184,13 @@ public class PlayerController : MonoBehaviour
 
     private void ActivateWindGust(Vector2 direction)
     {
-        StartCoroutine(DisableMovement(1.0f));
-        StartCoroutine(LowerGravity(2f));
+        StartCoroutine(DisableMovement(2.0f));
+        //StartCoroutine(LowerGravity(2f));
 
         m_Rigidbody.velocity = Vector2.zero;
-        m_Rigidbody.velocity = (direction.normalized * m_WindPower);
+        m_Rigidbody.velocity = (direction * m_WindPower);
 
-        Debug.Log("Wind Gusting");
+        Debug.Log("Direction: " + direction);
     }
 
     private void Move(Vector2 moveDirection)

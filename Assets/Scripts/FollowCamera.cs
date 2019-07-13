@@ -36,7 +36,6 @@ public class FollowCamera : MonoBehaviour
         
         if (!IsWithinRange(m_FollowTarget.position.y, m_Camera.transform.position.y - m_BottomBounds, m_Camera.transform.position.y + m_TopBounds))
         {
-            Debug.Log("Out of Range of Bounds");
             Vector3 dir = m_FollowTarget.transform.position + m_CameraOffset - m_Camera.transform.position;
             Vector3 moveVector = (dir.normalized * m_VerticalCamSpeed * Time.deltaTime) + m_Camera.transform.position;
 

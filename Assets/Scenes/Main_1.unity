@@ -297,9 +297,9 @@ MonoBehaviour:
   m_WallJumpVerticalStrength: 7
   m_WallJumpDrag: 0.95
   m_WallJumpLerpTime: 1
-  m_WindPower: 15
+  m_WindPower: 10
   m_MagnitudeThreshold: 10
-  m_StickOuterRimRadius: 0.902
+  m_StickOuterRimRadius: 0.958
   m_GroundLayerMask:
     serializedVersion: 2
     m_Bits: 256
@@ -6099,7 +6099,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7ea2642e18006f4f9bf686e1e52597f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlayerController: {fileID: 0}
+  m_PlayerController: {fileID: 21770952}
   m_LerpSpeed: 5
 --- !u!1 &1615506272
 GameObject:
