@@ -48,5 +48,6 @@ public class CheckpointManager : MonoBehaviour
         }
 
         m_EssenceController.gameObject.transform.position = m_ActiveCheckpoint.GetPosition();
+        m_EssenceController.RestoreAllEssence();
     }
 }

@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     public float m_SphereRadius = 0.1f;
 
     private Rigidbody2D m_Rigidbody;
+    private PlayerEssenceController m_EssenceController;
 
     private float m_WallJumpMomentum;
 
@@ -53,6 +54,9 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
+        m_EssenceController = GetComponent<PlayerEssenceController>();
+
+        m_EssenceController.m_OnPlayerDeath += OnPlayerDeath;
     }
 
     // Update is called once per frame
@@ -62,11 +66,13 @@ public class PlayerController : MonoBehaviour
         if (Input.GetAxis("RTrigger") >= 0.8f)
         {
             Physics2D.gravity = new Vector2(0.0f, -0.05f);
+            m_Rigidbody.drag = .75f;
             m_IsLeaf = true;
         }
         else
         {
             Physics2D.gravity = new Vector2(0.0f, -9.81f);
+            m_Rigidbody.drag = 0f;
             m_IsLeaf = false;
         }
         CheckForWindGust();
@@ -190,6 +196,8 @@ public class PlayerController : MonoBehaviour
         m_Rigidbody.velocity = Vector2.zero;
         m_Rigidbody.velocity = (direction * m_WindPower);
 
+        m_EssenceController.UseEssence();
+
         Debug.Log("Direction: " + direction);
     }
 
@@ -301,6 +309,11 @@ public class PlayerController : MonoBehaviour
     public void SetIsExpelled(bool b)
     {
         m_IsExpelled = b;
+    }
+
+    private void OnPlayerDeath()
+    {
+        m_Rigidbody.velocity = Vector2.zero;
     }
 
     private void OnGUI()
