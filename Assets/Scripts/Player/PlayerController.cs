@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D m_Rigidbody;
     private PlayerEssenceController m_EssenceController;
+    private CameraShake m_CameraShake;
 
     private float m_WallJumpMomentum;
 
@@ -55,6 +56,7 @@ public class PlayerController : MonoBehaviour
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_EssenceController = GetComponent<PlayerEssenceController>();
+        m_CameraShake = FindObjectOfType<CameraShake>();
 
         m_EssenceController.m_OnPlayerDeath += OnPlayerDeath;
     }
@@ -197,6 +199,7 @@ public class PlayerController : MonoBehaviour
         m_Rigidbody.velocity = (direction * m_WindPower);
 
         m_EssenceController.UseEssence();
+        m_CameraShake.AddTrauma(0.2f);
 
         Debug.Log("Direction: " + direction);
     }

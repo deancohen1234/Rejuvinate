@@ -20,5 +20,11 @@ public static class DeanUtils
         Vector3 rv = Vector3.Cross(from, to).normalized * angle; // todo: zero cross?
         return Vector3.Dot(axis, rv);
     }
+
+    public static bool IsAlmostEqual(float a, float b, float threshold)
+    {
+        bool check = Mathf.Abs(a - b) <= threshold;
+        return check;
+    }
 }
 
