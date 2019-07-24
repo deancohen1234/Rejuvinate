@@ -66,9 +66,6 @@ public class CameraShake : MonoBehaviour
         float x = m_MaxAngle * shake * ((perlinValueX * 2) - 1); //puts perlin between -1, 1
         float y = m_MaxAngle * shake * ((perlinValueY * 2) - 1); //puts perlin between -1, 1
         float z = m_MaxAngle * shake * ((perlinValueZ * 2) - 1); //puts perlin between -1, 1
-
-        Debug.Log("X: " + x + "\tY: " + y + "\tZ: " + z);
-
         //Quaternion q = Quaternion.Euler(x, y, transform.rotation.eulerAngles.z);
         Vector3 v = new Vector3(x, y, 0);
 

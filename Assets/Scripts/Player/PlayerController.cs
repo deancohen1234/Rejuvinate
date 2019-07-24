@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D m_Rigidbody;
     private PlayerEssenceController m_EssenceController;
     private CameraShake m_CameraShake;
+    private TimeWarp m_TimeWarp;
 
     private float m_WallJumpMomentum;
 
@@ -66,6 +67,7 @@ public class PlayerController : MonoBehaviour
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_EssenceController = GetComponent<PlayerEssenceController>();
         m_CameraShake = FindObjectOfType<CameraShake>();
+        m_TimeWarp = GetComponent<TimeWarp>();
 
         m_EssenceController.m_OnPlayerDeath += OnPlayerDeath;
     }
@@ -193,11 +195,20 @@ public class PlayerController : MonoBehaviour
         {
             if (IsStickOnOuterRim(direction))
             {
+                if (!m_TimeWarp.IsWarping())
+                {
+                    m_TimeWarp.SetTimeWarp(0.1f);
+                }
+
                 m_HasChargedGust = true;
                 m_StoredGustDirection = direction;
             }
             else
             {
+                if (!m_TimeWarp.IsWarping())
+                {
+                    m_TimeWarp.SetTimeWarp(1.0f);
+                }
                 if (m_HasChargedGust)
                 {
                     //use gust
@@ -255,7 +266,7 @@ public class PlayerController : MonoBehaviour
         m_Rigidbody.velocity = (direction * m_WindPower);
 
         m_EssenceController.UseEssence();
-        m_CameraShake.AddTrauma(0.2f);
+        m_CameraShake.AddTrauma(0.1f);
 
         StartCoroutine(ActivateVibration(0.25f, .5f));
 
