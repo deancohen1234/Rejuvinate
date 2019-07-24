@@ -16323,8 +16323,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_StableCamera: {fileID: 743844083}
   m_PerlinScale: 50
-  m_MaxAngle: 2.5
-  m_FalloffSpeed: 0.01
+  m_MaxAngle: 3
+  m_FalloffSpeed: 0.9
 --- !u!81 &1656133095
 AudioListener:
   m_ObjectHideFlags: 0

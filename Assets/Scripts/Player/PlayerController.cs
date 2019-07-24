@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using XInputDotNetPure;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -50,6 +51,12 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 m_StoredGustDirection; //needed to measure delta
     private bool m_HasChargedGust = false;
+
+    //vibration public variables
+    private bool playerIndexSet = false;
+    private PlayerIndex playerIndex;
+    private GamePadState state;
+    private GamePadState prevState;
 
     // Start is called before the first frame update
     void Start()
@@ -132,6 +139,29 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    private void ManageVibration()
+    {
+        // Find a PlayerIndex, for a single player game
+        // Will find the first controller that is connected ans use it
+        if (!playerIndexSet || !prevState.IsConnected)
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                PlayerIndex testPlayerIndex = (PlayerIndex)i;
+                GamePadState testState = GamePad.GetState(testPlayerIndex);
+                if (testState.IsConnected)
+                {
+                    Debug.Log(string.Format("GamePad found {0}", testPlayerIndex));
+                    playerIndex = testPlayerIndex;
+                    playerIndexSet = true;
+                }
+            }
+        }
+
+        prevState = state;
+        state = GamePad.GetState(playerIndex);
+    }
+
     private void CheckForWindGust()
     {
         float rx = Input.GetAxis("RStickHorizontal");
@@ -200,6 +230,8 @@ public class PlayerController : MonoBehaviour
 
         m_EssenceController.UseEssence();
         m_CameraShake.AddTrauma(0.2f);
+
+        StartCoroutine(ActivateVibration(0.25f, .5f));
 
         Debug.Log("Direction: " + direction);
     }
@@ -299,6 +331,16 @@ public class PlayerController : MonoBehaviour
         Physics2D.gravity = new Vector2(0.0f, -9.81f);
     }
 
+    //activate vibration for seconds
+    private IEnumerator ActivateVibration(float length, float strength)
+    {
+        GamePad.SetVibration(playerIndex, strength, strength);
+
+        yield return new WaitForSeconds(length);
+
+        GamePad.SetVibration(playerIndex, 0f, 0f);
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
@@ -322,5 +364,11 @@ public class PlayerController : MonoBehaviour
     private void OnGUI()
     {
         GUI.Label(new Rect(10, 10, 150, 90), "IsGrounded: " + m_IsGrounded + "\nIsOnWall: " + m_IsOnWall + "\nIsWallJumping: " + m_IsWallJumping);
+    }
+
+    private void OnDestroy()
+    {
+        //ensure vibration stops
+        GamePad.SetVibration(playerIndex, 0f, 0f);
     }
 }
