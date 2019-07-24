@@ -301,6 +301,7 @@ MonoBehaviour:
   m_WindPower: 10
   m_MagnitudeThreshold: 10
   m_StickOuterRimRadius: 0.958
+  m_UseAlternateControlScheme: 1
   m_GroundLayerMask:
     serializedVersion: 2
     m_Bits: 256

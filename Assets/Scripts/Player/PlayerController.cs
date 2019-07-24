@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     public float m_MagnitudeThreshold = 10.0f;
     [Range(0.0f, 1.0f)]
     public float m_StickOuterRimRadius = 0.5f;
+    public bool m_UseAlternateControlScheme = false;
 
     [Header("Collider Properties")]
     public LayerMask m_GroundLayerMask;
@@ -51,6 +52,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 m_StoredGustDirection; //needed to measure delta
     private bool m_HasChargedGust = false;
+    private bool m_TriggerPressed = false;
 
     //vibration public variables
     private bool playerIndexSet = false;
@@ -187,20 +189,44 @@ public class PlayerController : MonoBehaviour
 
         m_StoredGustDirection = direction;*/
 
-        if (IsStickOnOuterRim(direction))
+        if (m_UseAlternateControlScheme == false)
         {
-            m_HasChargedGust = true;
-            m_StoredGustDirection = direction;
-        }
-        else
-        {
-            if (m_HasChargedGust)
+            if (IsStickOnOuterRim(direction))
             {
-                //use gust
-                ActivateWindGust(new Vector2(-m_StoredGustDirection.normalized.x, m_StoredGustDirection.normalized.y));
-                m_HasChargedGust = false;
+                m_HasChargedGust = true;
+                m_StoredGustDirection = direction;
+            }
+            else
+            {
+                if (m_HasChargedGust)
+                {
+                    //use gust
+                    ActivateWindGust(new Vector2(-m_StoredGustDirection.normalized.x, m_StoredGustDirection.normalized.y));
+                    m_HasChargedGust = false;
+                }
             }
         }
+
+        else
+        {
+            if (IsStickOnOuterRim(direction))
+            {
+                m_HasChargedGust = true;
+                m_StoredGustDirection = direction;
+                if (Input.GetAxis("LTrigger") >= .8f && !m_TriggerPressed)
+                {
+                    ActivateWindGust(new Vector2(-m_StoredGustDirection.normalized.x, m_StoredGustDirection.normalized.y));
+                    m_TriggerPressed = true;
+                }
+                else if (Input.GetAxis("LTrigger") <= 0.1f)
+                {
+                    m_TriggerPressed = false;
+                }
+            }
+            
+        }
+
+
     }
 
     public bool IsStickOnOuterRim(Vector2 stickPosition)
