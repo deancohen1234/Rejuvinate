@@ -69,9 +69,11 @@ public class CameraShake : MonoBehaviour
 
         Debug.Log("X: " + x + "\tY: " + y + "\tZ: " + z);
 
-        Quaternion q = Quaternion.Euler(x, y, transform.rotation.eulerAngles.z);
+        //Quaternion q = Quaternion.Euler(x, y, transform.rotation.eulerAngles.z);
+        Vector3 v = new Vector3(x, y, 0);
 
-        GetComponent<Camera>().transform.rotation = q * m_StableCamera.transform.rotation; //potentially could just be a vector not a camera
+        //GetComponent<Camera>().transform.rotation = q * m_StableCamera.transform.rotation; //potentially could just be a vector not a camera
+        GetComponent<Camera>().transform.position = m_StableCamera.transform.position + v;
 
         if (m_Trauma > 0)
         {

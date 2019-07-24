@@ -16301,7 +16301,6 @@ GameObject:
   - component: {fileID: 1656133097}
   - component: {fileID: 1656133096}
   - component: {fileID: 1656133095}
-  - component: {fileID: 1656133094}
   - component: {fileID: 1656133093}
   m_Layer: 0
   m_Name: ShakeyCamera
@@ -16323,28 +16322,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_StableCamera: {fileID: 743844083}
-  m_PerlinScale: 20
-  m_MaxAngle: 10
-  m_FalloffSpeed: 0.5
---- !u!114 &1656133094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1656133092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56af448eda2d27a43a80ce1bdadf7adf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_FollowTarget: {fileID: 21770956}
-  m_CameraOffset: {x: 0.19, y: 1, z: 0}
-  m_VerticalCamSpeed: 60
-  m_CamSpeed: 30
-  m_TopBounds: 0.89
-  m_BottomBounds: 1.81
-  m_VerticalCamSpeedCap: 10
+  m_PerlinScale: 50
+  m_MaxAngle: 2.5
+  m_FalloffSpeed: 0.01
 --- !u!81 &1656133095
 AudioListener:
   m_ObjectHideFlags: 0
