@@ -27,9 +27,9 @@ public class TimeWarp : MonoBehaviour
     {
         if (m_IsWarping)
         {
+            Debug.Log("IsWarping");
             float curveTime = m_TransitionCurve.Evaluate(m_Time);
             float warpTimeScale = DeanUtils.Map(curveTime, 0, 1, m_PreviousTimeScale, m_DesiredTimeScale);
-            Debug.Log(warpTimeScale);
 
             Time.timeScale = warpTimeScale;
 
@@ -40,6 +40,7 @@ public class TimeWarp : MonoBehaviour
                 //warp complete
                 m_Time = 0;
                 m_IsWarping = false;
+                Time.timeScale = m_DesiredTimeScale;
             }
         }
 
@@ -55,6 +56,12 @@ public class TimeWarp : MonoBehaviour
 
     public void SetTimeWarp(float timeScale)
     {
+        if (DeanUtils.IsAlmostEqual(timeScale, Time.timeScale, 0.0001f))
+        {
+            //don't set time warp if we are already there
+            return;
+        }
+
         m_Time = 0.0f;
 
         m_PreviousTimeScale = Time.timeScale;

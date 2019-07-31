@@ -43,7 +43,7 @@ public class GustRadial : MonoBehaviour
 
         float angle = Mathf.Atan2(-ry, rx); //in radians
         Quaternion destinationRotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Rad2Deg * (angle - Mathf.PI / 2))));
-        Quaternion desiredQuaternion = Quaternion.Lerp(transform.localRotation, destinationRotation, Time.deltaTime * m_LerpSpeed);
+        Quaternion desiredQuaternion = Quaternion.Lerp(transform.localRotation, destinationRotation, Time.unscaledDeltaTime * m_LerpSpeed);
 
         transform.localRotation = desiredQuaternion;
     }

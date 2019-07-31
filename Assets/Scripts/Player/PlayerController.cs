@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     public float m_MagnitudeThreshold = 10.0f;
     [Range(0.0f, 1.0f)]
     public float m_StickOuterRimRadius = 0.5f;
+    public float m_TimeToCharge = 0.75f;
     public bool m_UseAlternateControlScheme = false;
 
     [Header("Collider Properties")]
@@ -61,6 +62,9 @@ public class PlayerController : MonoBehaviour
     private GamePadState state;
     private GamePadState prevState;
 
+    //wind power global variables
+    private float m_ChargeStartTime;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -78,7 +82,7 @@ public class PlayerController : MonoBehaviour
         //floaty leaf form
         if (Input.GetAxis("RTrigger") >= 0.8f)
         {
-            Physics2D.gravity = new Vector2(0.0f, -0.05f);
+            Physics2D.gravity = new Vector2(0.0f, -0.2f);
             m_Rigidbody.drag = .75f;
             m_IsLeaf = true;
         }
@@ -195,25 +199,32 @@ public class PlayerController : MonoBehaviour
         {
             if (IsStickOnOuterRim(direction))
             {
-                if (!m_TimeWarp.IsWarping())
+                //default start time is negative
+                if (m_ChargeStartTime <= 0)
+                {
+                    m_ChargeStartTime = Time.time;
+                }
+                /*if (!m_TimeWarp.IsWarping())
                 {
                     m_TimeWarp.SetTimeWarp(0.1f);
-                }
+                }*/
 
-                m_HasChargedGust = true;
-                m_StoredGustDirection = direction;
-            }
-            else
-            {
-                if (!m_TimeWarp.IsWarping())
+                if (Time.time - m_ChargeStartTime > m_TimeToCharge && !m_HasChargedGust)
                 {
-                    m_TimeWarp.SetTimeWarp(1.0f);
+                    m_HasChargedGust = true;
+                    m_StoredGustDirection = direction;
                 }
+            }
+            else if (DeanUtils.IsAlmostEqual(direction.sqrMagnitude, 0.0f, 0.1f))
+            {
                 if (m_HasChargedGust)
                 {
                     //use gust
+                    //m_TimeWarp.SetTimeWarp(1.0f);
                     ActivateWindGust(new Vector2(-m_StoredGustDirection.normalized.x, m_StoredGustDirection.normalized.y));
                     m_HasChargedGust = false;
+
+                    m_ChargeStartTime = -1f; //reset charge time
                 }
             }
         }
@@ -222,16 +233,31 @@ public class PlayerController : MonoBehaviour
         {
             if (IsStickOnOuterRim(direction))
             {
+                if (!m_TimeWarp.IsWarping() && m_TriggerPressed == false)
+                {
+                    m_TimeWarp.SetTimeWarp(0.1f);
+                }
                 m_HasChargedGust = true;
                 m_StoredGustDirection = direction;
                 if (Input.GetAxis("LTrigger") >= .8f && !m_TriggerPressed)
                 {
+                    if (!m_TimeWarp.IsWarping())
+                    {
+                        m_TimeWarp.SetTimeWarp(1.0f);
+                    }
                     ActivateWindGust(new Vector2(-m_StoredGustDirection.normalized.x, m_StoredGustDirection.normalized.y));
                     m_TriggerPressed = true;
                 }
                 else if (Input.GetAxis("LTrigger") <= 0.1f)
                 {
                     m_TriggerPressed = false;
+                }
+            }
+            else
+            {
+                if (!m_TimeWarp.IsWarping())
+                {
+                    m_TimeWarp.SetTimeWarp(1.0f);
                 }
             }
             
