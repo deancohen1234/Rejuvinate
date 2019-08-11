@@ -11,6 +11,9 @@ public class PlayerController : MonoBehaviour
     public float m_JumpAmount = 10.0f;
     public float m_FallMultiplier = 2.5f;
     public float m_LowJumpMultiplier = 2.0f;
+    public float m_SlowFallGravity = -1.0f;
+    public float m_HorizontalGlideSpeed = 0.2f;
+    public float m_VerticalGlideSpeed = 0.1f;
 
     [Header("Wall Jump Properties")]
     public float m_WallSlideSpeed = 0.5f;
@@ -79,12 +82,20 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //get  input
+        float x = Input.GetAxis("Horizontal");
+        float y = Input.GetAxis("Vertical");
+        Vector2 direction = new Vector2(x, y);
+
         //floaty leaf form
         if (Input.GetAxis("RTrigger") >= 0.8f)
         {
-            Physics2D.gravity = new Vector2(0.0f, -0.2f);
+            Physics2D.gravity = new Vector2(0.0f, m_SlowFallGravity);
             m_Rigidbody.drag = .75f;
             m_IsLeaf = true;
+
+            Vector2 glideDirection = new Vector2(direction.x * m_HorizontalGlideSpeed, direction.y * m_VerticalGlideSpeed);
+            m_Rigidbody.velocity += glideDirection;
         }
         else
         {
@@ -99,11 +110,6 @@ public class PlayerController : MonoBehaviour
 
         CalculateCollisions();
         CalculateFallingSpeed();
-
-
-        float x = Input.GetAxis("Horizontal");
-        float y = Input.GetAxis("Vertical");
-        Vector2 direction = new Vector2(x, y);
 
 
         if (m_CanMove)
@@ -293,10 +299,9 @@ public class PlayerController : MonoBehaviour
 
         m_EssenceController.UseEssence();
         m_CameraShake.AddTrauma(0.1f);
+        GetComponent<AnimationController>().ActivateGust(direction);
 
         StartCoroutine(ActivateVibration(0.25f, .5f));
-
-        Debug.Log("Direction: " + direction);
     }
 
     private void Move(Vector2 moveDirection)

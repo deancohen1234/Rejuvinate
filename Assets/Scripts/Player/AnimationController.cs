@@ -6,6 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class AnimationController : MonoBehaviour
 {
+    public GameObject m_GustPrefab;
+
     private Animator m_Animator;
     private Rigidbody2D m_Rigidbody;
 
@@ -42,6 +44,16 @@ public class AnimationController : MonoBehaviour
         {
             m_Animator.SetBool("IsIdle", false);
         }
+    }
+
+    public void ActivateGust(Vector2 direction)
+    {
+        float angle = Mathf.Atan2(direction.y, direction.x); //in radians
+        Quaternion destinationRotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Rad2Deg * (angle - Mathf.PI / 2))));
+
+        GameObject g = Instantiate(m_GustPrefab);
+        g.transform.position = transform.position;
+        g.transform.rotation = destinationRotation;
     }
 
     private bool IsAlmostEqual(float a, float b, float threshold)

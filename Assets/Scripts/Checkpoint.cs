@@ -50,6 +50,8 @@ public class Checkpoint : MonoBehaviour
         {
             //invoke checkpoint for manager
             m_MainCheckpointEvent(this);
+
+            other.gameObject.GetComponent<PlayerEssenceController>().RestoreAllEssence();
             OnCheckpointActivated();
         }
     }
