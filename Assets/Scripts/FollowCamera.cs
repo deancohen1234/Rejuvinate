@@ -11,7 +11,11 @@ public class FollowCamera : MonoBehaviour
     public float m_VerticalCamSpeed = 1.0f;
     public float m_HorizonatalCamSpeed = 1.0f;
 
+    public float m_MagnitudeMultiplier = 1.0f;
+
     private Camera m_Camera;
+
+    private float m_VerticalSqrMag;
 
     private void Awake()
     {
@@ -21,10 +25,20 @@ public class FollowCamera : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        float newFollowX = Mathf.SmoothStep(m_Camera.transform.position.x, m_FollowTarget.position.x + m_CameraOffset.x, Time.deltaTime * m_HorizonatalCamSpeed);
-        float newFollowY = Mathf.SmoothStep(m_Camera.transform.position.y, m_FollowTarget.position.y + m_CameraOffset.y, Time.deltaTime * m_VerticalCamSpeed);
+        Vector2 dist = (Vector2)m_Camera.transform.position - (Vector2)(m_FollowTarget.position + m_CameraOffset);
+        m_VerticalSqrMag = dist.sqrMagnitude;
 
-        m_Camera.transform.position = new Vector3(newFollowX, newFollowY, m_Camera.transform.position.x);
+        float verticalSpeedMultiplier = (1f + m_VerticalSqrMag) * m_MagnitudeMultiplier * m_VerticalCamSpeed;
+
+        float newFollowX = Mathf.SmoothStep(m_Camera.transform.position.x, m_FollowTarget.position.x + m_CameraOffset.x, Time.deltaTime * m_HorizonatalCamSpeed);
+        float newFollowY = Mathf.SmoothStep(m_Camera.transform.position.y, m_FollowTarget.position.y + m_CameraOffset.y, Time.deltaTime * verticalSpeedMultiplier);
+
+        m_Camera.transform.position = new Vector3(newFollowX, newFollowY, m_Camera.transform.position.z);
+    }
+
+    private void OnGUI()
+    {
+        GUI.Label(new Rect(10f, 420f, 100f, 69f), m_VerticalSqrMag.ToString());
     }
 
 }

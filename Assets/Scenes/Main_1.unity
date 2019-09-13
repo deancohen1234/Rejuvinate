@@ -38072,6 +38072,7 @@ MonoBehaviour:
   m_CameraOffset: {x: 0, y: 0.15, z: 0}
   m_VerticalCamSpeed: 15
   m_HorizonatalCamSpeed: 20
+  m_MagnitudeMultiplier: 0.5
 --- !u!1 &750630206
 GameObject:
   m_ObjectHideFlags: 0
