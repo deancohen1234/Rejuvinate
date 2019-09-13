@@ -8,18 +8,31 @@ public class CheckpointManager : MonoBehaviour
     public CheckpointEvent m_OnCheckpointActivated;
 
     public Checkpoint[] m_AllCheckpoints;
-    public PlayerEssenceController m_EssenceController;
+    public PlayerController m_Player;
 
     private Checkpoint m_ActiveCheckpoint = null;
 
     // Start is called before the first frame update
     void Start()
     {
+        SetupCheckpoints();
+    }
+
+    private void OnEnable()
+    {
         //subscribe manager functions to events
         m_OnCheckpointActivated += OnCheckpointActivated;
-        m_EssenceController.m_OnPlayerDeath += OnPlayerDeath;
+        m_Player.GetComponent<HealthComponent>().m_OnPlayerRespawn += OnPlayerRespawn;
+    }
 
-        SetupCheckpoints();
+    private void OnDisable()
+    {
+        //unsubscribe manager functions to events
+
+        //TODO m_Player  line throws error on closing game
+
+        //m_OnCheckpointActivated -= OnCheckpointActivated;
+        //m_Player.GetComponent<HealthComponent>().m_OnPlayerRespawn -= OnPlayerRespawn;
     }
 
     private void SetupCheckpoints()
@@ -39,7 +52,7 @@ public class CheckpointManager : MonoBehaviour
         m_ActiveCheckpoint = checkpoint;
     }
 
-    private void OnPlayerDeath()
+    private void OnPlayerRespawn()
     {
         if (m_ActiveCheckpoint == null)
         {
@@ -47,7 +60,7 @@ public class CheckpointManager : MonoBehaviour
             return;
         }
 
-        m_EssenceController.gameObject.transform.position = m_ActiveCheckpoint.GetPosition();
-        m_EssenceController.RestoreAllEssence();
+        m_Player.gameObject.transform.position = m_ActiveCheckpoint.GetPosition();
+        m_Player.GetEssenceController().RestoreAllEssence();
     }
 }

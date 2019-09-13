@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D m_Rigidbody;
     private PlayerEssenceController m_EssenceController;
+    private HealthComponent m_HealthComponent;
     private CameraShake m_CameraShake;
     private TimeWarp m_TimeWarp;
 
@@ -73,6 +74,7 @@ public class PlayerController : MonoBehaviour
     {
         m_Rigidbody = GetComponent<Rigidbody2D>();
         m_EssenceController = GetComponent<PlayerEssenceController>();
+        m_HealthComponent = GetComponent<HealthComponent>();
         m_CameraShake = FindObjectOfType<CameraShake>();
         m_TimeWarp = GetComponent<TimeWarp>();
 
@@ -82,6 +84,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CheckDeathState(m_HealthComponent.IsDead()); //freeze player position and hide sprite if player is dead
+
         //get  input
         float x = Input.GetAxis("Horizontal");
         float y = Input.GetAxis("Vertical");
@@ -151,6 +155,20 @@ public class PlayerController : MonoBehaviour
         }
 
 
+    }
+
+    private void CheckDeathState(bool freezePosition)
+    {
+        if (freezePosition)
+        {
+            m_Rigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
+            gameObject.GetComponent<SpriteRenderer>().enabled = false; //TODO make this not use GetComponent every frame
+        }
+        else
+        {
+            m_Rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+            gameObject.GetComponent<SpriteRenderer>().enabled = true; //TODO make this not use GetComponent every frame
+        }
     }
 
     private void ManageVibration()
@@ -422,6 +440,11 @@ public class PlayerController : MonoBehaviour
     public void SetIsExpelled(bool b)
     {
         m_IsExpelled = b;
+    }
+
+    public PlayerEssenceController GetEssenceController()
+    {
+        return m_EssenceController;
     }
 
     private void OnPlayerDeath()

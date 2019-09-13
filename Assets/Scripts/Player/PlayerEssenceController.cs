@@ -34,7 +34,11 @@ public class PlayerEssenceController : MonoBehaviour
 
     public void RestoreAllEssence()
     {
-        m_HealthComponent.Revive();
+        if (m_HealthComponent.IsDead())
+        {
+            m_HealthComponent.Revive();
+        }
+
         UpdateEssenceUI();
     }
 
