@@ -79,6 +79,8 @@ public class PlayerController : MonoBehaviour
         m_TimeWarp = GetComponent<TimeWarp>();
 
         m_EssenceController.m_OnPlayerDeath += OnPlayerDeath;
+
+        Debug.Log("<color=red>Error: </color>AssetBundle not found");
     }
 
     // Update is called once per frame
@@ -454,7 +456,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 150, 90), "IsGrounded: " + m_IsGrounded + "\nIsOnWall: " + m_IsOnWall + "\nIsWallJumping: " + m_IsWallJumping);
+        GUI.Label(new Rect(10, 10, 150, 90), "IsGrounded: " + m_IsGrounded + "\nIsOnWall: " + m_IsOnWall + "\nIsWallJumping: " + m_IsWallJumping + "\n<color=red>Error: </color>AssetBundle not found");
     }
 
     private void OnDestroy()
