@@ -69,6 +69,11 @@ public class HealthComponent : MonoBehaviour
         m_CurrentHealth += Mathf.Clamp(m_CurrentHealth + healAmount, 0, m_MaxHealth);
     }
 
+    public void RestoreAllHealth()
+    {
+        m_CurrentHealth = m_MaxHealth;
+    }
+
     public void Revive()
     {
         m_IsDead = false;

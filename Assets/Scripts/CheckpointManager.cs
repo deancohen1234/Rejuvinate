@@ -46,10 +46,11 @@ public class CheckpointManager : MonoBehaviour
 
     private void OnCheckpointActivated(Checkpoint checkpoint)
     {
-        Debug.Log("Checkpoint activated + " + checkpoint.m_Order);
+        Debug.Log("Checkpoint activated: " + checkpoint.m_Order);
 
         //set active checkpoint
         m_ActiveCheckpoint = checkpoint;
+        m_Player.GetEssenceController().RestoreAllEssence();
     }
 
     private void OnPlayerRespawn()
