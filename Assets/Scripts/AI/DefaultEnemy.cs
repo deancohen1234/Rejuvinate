@@ -8,7 +8,7 @@ public class DefaultEnemy : MonoBehaviour
 {
     public Transform m_Player;
 
-    public DefaultPatrolState m_PatrolState;
+    public FollowPathPatrol m_PatrolState;
     public DefaultEngageState m_EngageState;
     public DefaultDisengageState m_DisengageState;
 
